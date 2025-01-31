@@ -107,9 +107,14 @@ realtimeWs.on("message", function incoming(message) {
     if (response.type === "response.audio.delta") {
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(
-            JSON.stringify({ type: "audio", content: response.delta })
-          );
+          const audioData = {
+            type: "audio",
+            content: {
+              payload: Buffer.from(response.delta, "base64").toString("base64"),
+            },
+          };
+
+          client.send(JSON.stringify(audioData));
         }
       });
     }
